@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import XMLParser from "react-xml-parser";
 
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState("");
+  const [count, setCount] = useState({});
 
   useEffect(() => {
     async function handleGetPriceList() {
@@ -15,7 +16,9 @@ function App() {
       try {
         const { data } = await axios.get("public/a.xml", config);
         console.log("data", data);
-        setCount(data);
+        const xmlToJson = new XMLParser().parseFromString(data);
+        console.log(xmlToJson);
+        setCount(xmlToJson);
       } catch (error) {
         console.log("Error: ", error);
       }
@@ -24,11 +27,7 @@ function App() {
     handleGetPriceList();
   }, []);
 
-  return (
-    <div className="App">
-      <pre>{count}</pre>
-    </div>
-  );
+  return <div className="App">{count && <pre>{count.name}</pre>}</div>;
 }
 
 export default App;
