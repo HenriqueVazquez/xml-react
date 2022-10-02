@@ -6,6 +6,9 @@ import "./App.css";
 
 function App() {
   const [count, setCount] = useState("");
+  const [key, setKey] = useState("");
+  const [creatAt, setCreatAt] = useState("");
+  const [total, setTotal] = useState("");
 
   useEffect(() => {
     async function handleGetPriceList() {
@@ -15,14 +18,18 @@ function App() {
 
       try {
         const { data } = await axios.get("public/a.xml", config);
-        console.log("data", data);
         const xmlToJson = new XMLParser().parseFromString(data);
-        console.log(
-          "nnfe",
-          xmlToJson.children[0].children[0].children[0].children[5].value
-        );
+
+        setKey(xmlToJson.children[1].children[0].children[2].value);
         setCount(
           xmlToJson.children[0].children[0].children[0].children[5].value
+        );
+        setCreatAt(
+          xmlToJson.children[0].children[0].children[0].children[6].value
+        );
+        setTotal(
+          xmlToJson.children[0].children[0].children[11].children[0].children[1]
+            .value
         );
       } catch (error) {
         console.log("Error: ", error);
@@ -36,6 +43,9 @@ function App() {
     <div className="App">
       <ul>
         <li>nNF: {count}</li>
+        <li>Chave: {key}</li>
+        <li>Data: {creatAt}</li>
+        <li>Total: {total}</li>
       </ul>
     </div>
   );
