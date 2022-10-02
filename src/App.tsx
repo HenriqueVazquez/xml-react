@@ -12,18 +12,24 @@ function App() {
     const itensCopy = Array.from(event.target.files);
     let processedFiles: any = [];
 
-    itensCopy.forEach((item) => {
+    itensCopy.forEach((itemXml: any) => {
       let file = event.target.files[0];
       let reader = new FileReader();
-      reader.readAsText(file, "windows-1251");
+
+      reader.readAsText(itemXml, "windows-1251");
+
       reader.onloadend = () => {
         const xmlToJson = new XMLParser().parseFromString(reader.result);
+
+        let findTotal = xmlToJson.children[0].children[0].children;
+        findTotal = findTotal.find((item: any) => item.name === "total");
 
         let item = {
           nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
           chave: xmlToJson.children[1]?.children[0].children[2].value,
           data: xmlToJson.children[0]?.children[0].children[0].children[6]
             .value,
+          total: findTotal.children[0].children[21].value,
         };
 
         setJsonXmlList((prev: any) => [item, ...prev]);
@@ -36,19 +42,34 @@ function App() {
   return (
     <div className="App">
       <input type="file" multiple accept="text/xml" onChange={handleFile} />
-
       <br />
       <br />
-
-      {jsonXmlList.map((item: any, index: number) => {
-        return (
-          <tr key={index}>
-            <td>Nnf: {item.nnf}</td>
-            <td>chave: {item.chave}</td>
-            <td>data: {item.data}</td>
-          </tr>
-        );
-      })}
+      {jsonXmlList.length > 0 && (
+        <section>
+          <table>
+            <thead>
+              <tr>
+                <th>Nnf</th>
+                <th>Chave</th>
+                <th>Data</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jsonXmlList.map((item: any, index: number) => {
+                return (
+                  <tr key={index}>
+                    <td>{item.nnf}</td>
+                    <td>{item.chave}</td>
+                    <td>{item.data}</td>
+                    <td>{item.total}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
     </div>
   );
 }
