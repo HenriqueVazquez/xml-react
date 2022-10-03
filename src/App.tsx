@@ -1,11 +1,13 @@
 import { useState } from "react";
-
+import { format } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
 import XMLParser from "react-xml-parser";
+
+import formatCurrency from "../src/ultils/formatCurrency";
 
 import "./App.css";
 
 function App() {
-  const [xmlItems, setXmlItems] = useState<any>([]);
   const [jsonXmlList, setJsonXmlList] = useState<any>([]);
 
   const handleFile = (event: any) => {
@@ -13,11 +15,8 @@ function App() {
     let processedFiles: any = [];
 
     itensCopy.forEach((itemXml: any) => {
-      let file = event.target.files[0];
       let reader = new FileReader();
-
       reader.readAsText(itemXml, "windows-1251");
-
       reader.onloadend = () => {
         const xmlToJson = new XMLParser().parseFromString(reader.result);
 
@@ -27,9 +26,14 @@ function App() {
         let item = {
           nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
           chave: xmlToJson.children[1]?.children[0].children[2].value,
-          data: xmlToJson.children[0]?.children[0].children[0].children[6]
-            .value,
-          total: findTotal.children[0].children[21].value,
+          data: format(
+            new Date(
+              xmlToJson.children[0]?.children[0].children[0].children[6].value
+            ),
+            "yyyy/MM/dd HH:mm:ss",
+            { locale: ptBR }
+          ),
+          total: parseFloat(findTotal.children[0].children[21].value),
         };
 
         setJsonXmlList((prev: any) => [item, ...prev]);
@@ -38,6 +42,15 @@ function App() {
 
     setJsonXmlList(processedFiles);
   };
+
+  function handleCalcTotal(items: any) {
+    let valor: number = 0;
+    items.forEach((x: any) => {
+      valor += x.total;
+    });
+
+    return valor;
+  }
 
   return (
     <div className="App">
@@ -62,12 +75,15 @@ function App() {
                     <td>{item.nnf}</td>
                     <td>{item.chave}</td>
                     <td>{item.data}</td>
-                    <td>{item.total}</td>
+                    <td>{formatCurrency(item.total)}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+
+          <div>Arquivos analizados: {jsonXmlList.length}</div>
+          <div>Valor total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
         </section>
       )}
     </div>
