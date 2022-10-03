@@ -10,6 +10,7 @@ import "./styles/main.css";
 
 interface IXmlItem {
   key: string;
+  mod: number;
   dateTime: string;
   nnf: string;
   total: number;
@@ -20,7 +21,6 @@ function App() {
 
   const handleFileChange = (event: any) => {
     const itensCopy = Array.from(event.target.files);
-    let processedFiles: IXmlItem[] = [];
 
     itensCopy.forEach((itemXml: any) => {
       let reader = new FileReader();
@@ -33,6 +33,9 @@ function App() {
 
         let item = {
           nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
+          mod: parseInt(
+            xmlToJson.children[0]?.children[0].children[0].children[3].value
+          ),
           key: xmlToJson.children[1]?.children[0].children[2].value,
           dateTime: format(
             new Date(
@@ -47,8 +50,6 @@ function App() {
         setJsonXmlList((prev: any) => [item, ...prev]);
       };
     });
-
-    setJsonXmlList(processedFiles);
   };
 
   function handleCalcTotal(items: IXmlItem[]) {
@@ -58,6 +59,25 @@ function App() {
     });
 
     return valor;
+  }
+
+  function handleFilterXmlByType(items: IXmlItem[], modelo: number) {
+    let valor: number = 0;
+    const filterNotes = items.filter((item) => item.mod === modelo);
+
+    filterNotes.forEach((item) => {
+      valor += item.total;
+    });
+
+    return (
+      <div className="m-5 flex flex-col items-center justify-center font-medium">
+        <div className="mx-2">
+          {modelo === 55 ? "Total NFE: " : "Total NFC-e/SAT: "}
+          {formatCurrency(valor)}
+        </div>
+        <div className="mx-2">Arquivos: {filterNotes.length}</div>
+      </div>
+    );
   }
 
   return (
@@ -98,16 +118,17 @@ function App() {
               <tbody className="divide-y divide-gray-200">
                 {jsonXmlList.map((item, index: number) => {
                   return (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className={`${item.mod === 55 && "bg-zinc-200"}`}
+                    >
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                         {item.nnf}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {item.key}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {item.dateTime}
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap"></td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {formatCurrency(item.total)}
                       </td>
@@ -118,10 +139,19 @@ function App() {
             </table>
           </section>
 
-          <section className="m-5 flex flex-col items-center justify-center font-medium">
-            <div>Arquivos processados: {jsonXmlList.length}</div>
-            <div>
-              Valor total: {formatCurrency(handleCalcTotal(jsonXmlList))}
+          <section className="w-full flex flex-col items-center justify-center m-8">
+            <h1 className="text-blue-700 font-medium text-2xl">
+              Totalizadores
+            </h1>
+
+            <div className="m-5 flex items-center justify-center font-medium">
+              {handleFilterXmlByType(jsonXmlList, 55)}
+              {handleFilterXmlByType(jsonXmlList, 65)}
+
+              <div className="mx-2 flex  flex-col items-center justify-center">
+                <div>Total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
+                <div>Arquivos: {jsonXmlList.length}</div>
+              </div>
             </div>
           </section>
         </>
