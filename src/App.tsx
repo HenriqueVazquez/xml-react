@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { format } from "date-fns";
+
 import ptBR from "date-fns/locale/pt-BR";
 import XMLParser from "react-xml-parser";
 
 import formatCurrency from "../src/ultils/formatCurrency";
+
+import "./styles/main.css";
 
 interface IXmlItem {
   key: string;
@@ -11,8 +14,6 @@ interface IXmlItem {
   nnf: string;
   total: number;
 }
-
-import "./App.css";
 
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
@@ -60,46 +61,70 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <input
-        type="file"
-        multiple
-        accept="text/xml"
-        onChange={handleFileChange}
-      />
-      <br />
-      <br />
+    <div className="flex flex-col items-center justify-center">
+      <form>
+        <label className="block">
+          <span className="sr-only">Choose File</span>
+          <input
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 m-8 cursor-pointer"
+            type="file"
+            multiple
+            accept="text/xml"
+            onChange={handleFileChange}
+          />
+        </label>
+      </form>
 
       {jsonXmlList.length > 0 && (
-        <section>
-          <table>
-            <thead>
-              <tr>
-                <th>Nnf</th>
-                <th>Chave</th>
-                <th>Data</th>
-                <th>Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jsonXmlList.map((item, index: number) => {
-                return (
-                  <tr key={index}>
-                    <td>{item.nnf}</td>
-                    <td>{item.key}</td>
-                    <td>{item.dateTime}</td>
-                    <td>{formatCurrency(item.total)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <>
+          <section className="w-3/5 border rounded-lg">
+            <table className="w-full divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                    Nnf
+                  </th>
+                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                    Chave
+                  </th>
+                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                    Data
+                  </th>
+                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                    Valor
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {jsonXmlList.map((item, index: number) => {
+                  return (
+                    <tr key={index}>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                        {item.nnf}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {item.key}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {item.dateTime}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {formatCurrency(item.total)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </section>
 
-          <br />
-
-          <div>Arquivos analizados: {jsonXmlList.length}</div>
-          <div>Valor total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
-        </section>
+          <section className="m-5 flex flex-col items-center justify-center font-medium">
+            <div>Arquivos processados: {jsonXmlList.length}</div>
+            <div>
+              Valor total: {formatCurrency(handleCalcTotal(jsonXmlList))}
+            </div>
+          </section>
+        </>
       )}
     </div>
   );
