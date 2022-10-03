@@ -82,7 +82,7 @@ function App() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form>
+      <form className="flex items-center">
         <label className="block">
           <span className="sr-only">Choose File</span>
           <input
@@ -93,6 +93,15 @@ function App() {
             onChange={handleFileChange}
           />
         </label>
+
+        {jsonXmlList.length > 0 && (
+          <button
+            className="bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full m-8 cursor-pointer hover:bg-blue-100"
+            onClick={() => setJsonXmlList([])}
+          >
+            Limpar Dados
+          </button>
+        )}
       </form>
 
       {jsonXmlList.length > 0 && (
@@ -128,7 +137,9 @@ function App() {
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {item.key}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap"></td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {item.dateTime}
+                      </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {formatCurrency(item.total)}
                       </td>
