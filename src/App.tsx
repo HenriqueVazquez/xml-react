@@ -5,14 +5,21 @@ import XMLParser from "react-xml-parser";
 
 import formatCurrency from "../src/ultils/formatCurrency";
 
+interface IXmlItem {
+  key: string;
+  dateTime: string;
+  nnf: string;
+  total: number;
+}
+
 import "./App.css";
 
 function App() {
-  const [jsonXmlList, setJsonXmlList] = useState<any>([]);
+  const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
 
-  const handleFile = (event: any) => {
+  const handleFileChange = (event: any) => {
     const itensCopy = Array.from(event.target.files);
-    let processedFiles: any = [];
+    let processedFiles: IXmlItem[] = [];
 
     itensCopy.forEach((itemXml: any) => {
       let reader = new FileReader();
@@ -25,12 +32,12 @@ function App() {
 
         let item = {
           nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
-          chave: xmlToJson.children[1]?.children[0].children[2].value,
-          data: format(
+          key: xmlToJson.children[1]?.children[0].children[2].value,
+          dateTime: format(
             new Date(
               xmlToJson.children[0]?.children[0].children[0].children[6].value
             ),
-            "yyyy/MM/dd HH:mm:ss",
+            "dd/MM/yyyy HH:mm:ss",
             { locale: ptBR }
           ),
           total: parseFloat(findTotal.children[0].children[21].value),
@@ -43,10 +50,10 @@ function App() {
     setJsonXmlList(processedFiles);
   };
 
-  function handleCalcTotal(items: any) {
+  function handleCalcTotal(items: IXmlItem[]) {
     let valor: number = 0;
-    items.forEach((x: any) => {
-      valor += x.total;
+    items.forEach((item) => {
+      valor += item.total;
     });
 
     return valor;
@@ -54,9 +61,15 @@ function App() {
 
   return (
     <div className="App">
-      <input type="file" multiple accept="text/xml" onChange={handleFile} />
+      <input
+        type="file"
+        multiple
+        accept="text/xml"
+        onChange={handleFileChange}
+      />
       <br />
       <br />
+
       {jsonXmlList.length > 0 && (
         <section>
           <table>
@@ -69,18 +82,20 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {jsonXmlList.map((item: any, index: number) => {
+              {jsonXmlList.map((item, index: number) => {
                 return (
                   <tr key={index}>
                     <td>{item.nnf}</td>
-                    <td>{item.chave}</td>
-                    <td>{item.data}</td>
+                    <td>{item.key}</td>
+                    <td>{item.dateTime}</td>
                     <td>{formatCurrency(item.total)}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+
+          <br />
 
           <div>Arquivos analizados: {jsonXmlList.length}</div>
           <div>Valor total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
