@@ -6,6 +6,9 @@ import XMLParser from "react-xml-parser";
 
 import formatCurrency from "../src/ultils/formatCurrency";
 
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+
 import "./styles/main.css";
 
 interface IXmlItem {
@@ -18,6 +21,18 @@ interface IXmlItem {
 
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
+
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = ".xlsx";
+
+  const exportToCSV = (csvData: any, fileName: string) => {
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
+  };
 
   const handleFileChange = (event: any) => {
     const itensCopy = Array.from(event.target.files);
@@ -106,6 +121,9 @@ function App() {
 
       {jsonXmlList.length > 0 && (
         <>
+          <button onClick={(e) => exportToCSV(jsonXmlList, "relatorio")}>
+            Export
+          </button>
           <section className="w-3/5 border rounded-lg">
             <table className="w-full divide-gray-200">
               <thead className="bg-gray-50">
