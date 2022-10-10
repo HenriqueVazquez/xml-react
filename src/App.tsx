@@ -10,7 +10,7 @@ import { read, utils } from 'xlsx';
 import formatCurrency from "../src/ultils/formatCurrency";
 
 import ExportToCSV from "./functions/ExportToCSV";
-import * as XLSX from "xlsx";
+//import * as XLSX from "xlsx";
 
 import "./styles/main.css";
 import { IXmlItem } from "./interfaces/IXmlItem";
