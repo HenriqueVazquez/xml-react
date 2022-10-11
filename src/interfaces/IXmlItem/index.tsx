@@ -4,4 +4,5 @@ export interface IXmlItem {
   dateTime: string;
   nnf: string;
   total: number;
+  status: string;
 }

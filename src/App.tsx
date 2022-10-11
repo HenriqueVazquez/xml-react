@@ -20,7 +20,12 @@ import { ExcelItem } from "./interfaces/ExcelItem";
 
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
-  const [excelList, setexcelList] = useState<any[]>([]);
+  const [faltaSistema, setFaltaSistema] = useState<any[]>([]);
+  const [faltaXML, setFaltaXML] = useState<any[]>([]);
+  const [totalFaltaSistema, setTotalFaltaSistema] = useState<number>(0);
+  const [totalFaltaXML, setTotalFaltaXML] = useState<number>(0);
+  let teste = 0;
+
 
 
 
@@ -50,6 +55,7 @@ function App() {
             { locale: ptBR }
           ),
           total: parseFloat(findTotal.children[0].children[21].value),
+          status: "default",
         };
 
         setJsonXmlList((prev: any) => [item, ...prev]);
@@ -70,18 +76,43 @@ function App() {
     const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
     //setexcelList(data);
 
+
+
+    jsonXmlList.forEach(vendaXML => {
+      const compararVendas = data.find(vendaSistema => vendaXML.key === vendaSistema.CHAVE);
+      if (!compararVendas) {
+        setFaltaSistema((prev: any) => [vendaXML.key, ...prev]);
+        console.log(`teste falta Sistema ${vendaXML.key}`);
+        console.log(vendaXML.status);
+        setJsonXmlList((prev: any) => [...prev, vendaXML.status = "Faltou"]);
+
+        setTotalFaltaSistema(vendaXML.total + totalFaltaSistema)
+      }
+    });
+
     data.forEach(vendaSistema => {
-      const found = jsonXmlList.filter(vendaKey => vendaKey.key !== vendaSistema.chave);
+      const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.CHAVE === vendaXML.key);
+      if (!compararVendas) {
+        setFaltaSistema((prev: any) => [vendaSistema.CHAVE, ...prev]);
+        console.log(`teste falta xml ${vendaSistema.CHAVE}`);
+        const vendaSistemaValor = vendaSistema.VALOR.toString().replace(",", ".")
 
-      console.log(found)
+        setTotalFaltaXML(Number(vendaSistemaValor));
+
+      }
+    });
+
+    jsonXmlList.forEach(teste => {
+      console.log(teste.status)
+    });
 
 
-
-    })
   }
+  console.log(`Total de falta no sistema: ${totalFaltaSistema.toFixed(2)}`);
+  console.log(`Total de falta no XML: ${totalFaltaXML.toFixed(2)}`);
+  teste = totalFaltaXML + totalFaltaSistema
 
-
-
+  console.log(`Total de falta no XML: ${teste.toFixed(2)}`);
 
   function handleCalcTotal(items: IXmlItem[]) {
     let valor: number = 0;
