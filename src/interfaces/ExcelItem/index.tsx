@@ -1,6 +1,8 @@
 export interface ExcelItem {
-  NUMERO: string;
-  CHAVE: string;
-  DATA: string;
-  VALOR: string;
+  [x: string]: any;
+  numVenda: string;
+  chave: string;
+  data: string;
+  status: string;
+  valor: string;
 }

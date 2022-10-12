@@ -1,0 +1,35 @@
+    /*jsonXmlList.forEach(vendaXML => {
+            const compararVendas = objetoVendasExcel.find(vendaSistema => vendaXML.key === vendaSistema.chave);
+
+            if (!compararVendas) {
+              setFaltaSistema((prev: any) => [vendaXML.key, ...prev]);
+              console.log(`teste falta Sistema ${vendaXML.key}`);
+
+
+              setJsonXmlList((prev: any) => [...prev, vendaXML.status = "Falta no sistema"]);
+
+              setTotalFaltaSistema(vendaXML.total + totalFaltaSistema)
+            }
+          }); */
+
+
+          /* objetoVendasExcel.forEach(vendaSistema => {
+             const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.chave === vendaXML.key);
+             if (!compararVendas) {
+               setFaltaSistema((prev: any) => [vendaSistema.chave, ...prev]);
+               //console.log(`teste falta xml ${vendaSistema.CHAVE}`);
+               const vendaSistemaValor = vendaSistema.chave.toString().replace(",", ".")
+ 
+               setTotalFaltaXML(Number(vendaSistemaValor));
+ 
+             }
+           }); */
+
+
+           /*
+   console.log(`Total de falta no sistema: ${totalFaltaSistema.toFixed(2)}`);
+   console.log(`Total de falta no XML: ${totalFaltaXML.toFixed(2)}`);
+   teste = totalFaltaXML + totalFaltaSistema
+   
+   console.log(`Total de falta no XML: ${teste.toFixed(2)}`);
+   */
