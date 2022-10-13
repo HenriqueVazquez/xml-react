@@ -1,8 +1,8 @@
 export interface IXmlItem {
-  chave: string;
-  mod: number;
-  dateTime: string;
   nnf: string;
+  chave: string;
+  dateTime: string;
+  mod: number;
   status: string;
   total: number;
 

@@ -4,5 +4,5 @@ export interface ExcelItem {
   chave: string;
   data: string;
   status: string;
-  valor: string;
+  valor: number;
 }

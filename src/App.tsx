@@ -12,13 +12,12 @@ import { read, utils } from 'xlsx';
 import formatCurrency from "../src/ultils/formatCurrency";
 
 import ExportToCSV from "./functions/ExportToCSV";
-//import * as XLSX from "xlsx";
+
 
 import "./styles/main.css";
 import { IXmlItem } from "./interfaces/IXmlItem";
 import { ExcelItem } from "./interfaces/ExcelItem";
 
-import { HandleFileChange } from "./functions/HandleFileChange";
 
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
@@ -41,9 +40,6 @@ function App() {
 
         let item = {
           nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
-          mod: parseInt(
-            xmlToJson.children[0]?.children[0].children[0].children[3].value
-          ),
           chave: xmlToJson.children[1]?.children[0].children[2].value,
           dateTime: format(
             new Date(
@@ -52,9 +48,11 @@ function App() {
             "dd/MM/yyyy HH:mm:ss",
             { locale: ptBR }
           ),
-          total: parseFloat(findTotal.children[0].children[21].value),
+          mod: parseInt(
+            xmlToJson.children[0]?.children[0].children[0].children[3].value
+          ),
           status: "Passou",
-
+          total: parseFloat(findTotal.children[0].children[21].value),
         };
 
         setJsonXmlList((prev: any) => [item, ...prev]);
@@ -77,8 +75,9 @@ function App() {
           objetoVendasExcel.push({
             number: vendasExcel[i].__EMPTY,
             chave: vendasExcel[i].__EMPTY_17,
-            total: vendasExcel[i].__EMPTY_13,
             status: "Passou",
+            total: vendasExcel[i].__EMPTY_13,
+
           })
         }
       }
@@ -93,8 +92,8 @@ function App() {
           objetoVendasExcel.push({
             number: vendaExcel.NUMERO,
             chave: vendaExcel.CHAVE,
-            total: vendaExcel.VALOR,
             status: "Passou",
+            total: vendaExcel.VALOR,
           });
 
         })
@@ -107,8 +106,8 @@ function App() {
             objetoVendasExcel.push({
               number: vendaExcel['Numero da Nota'],
               chave: vendaExcel['Chave'],
-              total: vendaExcel['Valor Total'],
               status: "Passou",
+              total: vendaExcel['Valor Total'],
             });
 
         });
@@ -153,6 +152,7 @@ function App() {
   const total = formatCurrency(handleCalcTotal(jsonXmlList));
   const faltaSistemaTotalValor = formatCurrency(handleCalcTotal(notaFaltando));
   const faltaSistemaTotal = notaFaltando.length;
+  console.log(typeof faltaSistemaTotalValor)
 
   return (
     <div className="flex flex-col items-center justify-center">
