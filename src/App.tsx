@@ -23,10 +23,7 @@ import { HandleFileChange } from "./functions/HandleFileChange";
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
   const [systemList, setSystemList] = useState<ExcelItem[]>([]);
-  const [faltaSistema, setFaltaSistema] = useState<any[]>([]);
-  const [faltaXML, setFaltaXML] = useState<any[]>([]);
-  const [totalFaltaSistema, setTotalFaltaSistema] = useState<number>(0);
-  const [totalFaltaXML, setTotalFaltaXML] = useState<number>(0);
+  const [notaFaltando, setNotaFaltando] = useState<any[]>([]);
 
 
 
@@ -56,7 +53,7 @@ function App() {
             { locale: ptBR }
           ),
           total: parseFloat(findTotal.children[0].children[21].value),
-          status: "Default xml",
+          status: "Passou",
 
         };
 
@@ -81,7 +78,7 @@ function App() {
             number: vendasExcel[i].__EMPTY,
             chave: vendasExcel[i].__EMPTY_17,
             total: vendasExcel[i].__EMPTY_13,
-            status: "Default sistema",
+            status: "Passou",
           })
         }
       }
@@ -97,7 +94,7 @@ function App() {
             number: vendaExcel.NUMERO,
             chave: vendaExcel.CHAVE,
             total: vendaExcel.VALOR,
-            status: "Default sistema",
+            status: "Passou",
           });
 
         })
@@ -111,7 +108,7 @@ function App() {
               number: vendaExcel['Numero da Nota'],
               chave: vendaExcel['Chave'],
               total: vendaExcel['Valor Total'],
-              status: "Default sistema",
+              status: "Passou",
             });
 
         });
@@ -129,19 +126,34 @@ function App() {
 
         vendaXML.status = "Faltou sistema"
 
-        setFaltaSistema((prev: any) => [vendaXML, ...prev]);
-
+        setNotaFaltando((prev: any) => [vendaXML, ...prev]);
 
       }
 
     });
+
+    systemList.forEach(vendaSistema => {
+      const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.chave === vendaXML.chave);
+      if (!compararVendas && (vendaSistema.chave || vendaSistema.numVenda)) {
+        console.log(vendaSistema)
+
+        vendaSistema.status = "Faltou XML"
+
+        setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+
+      }
+
+    });
+
+
   }, [systemList]);
 
 
 
   const total = formatCurrency(handleCalcTotal(jsonXmlList));
-  console.log(faltaSistema)
-  console.log(faltaSistema)
+  const faltaSistemaTotalValor = formatCurrency(handleCalcTotal(notaFaltando));
+  const faltaSistemaTotal = notaFaltando.length;
+
   return (
     <div className="flex flex-col items-center justify-center">
       <form className="flex items-center">
@@ -173,7 +185,7 @@ function App() {
           >
             <button
               className="bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full m-8 cursor-pointer hover:bg-blue-100"
-              onClick={(e) => ExportToCSV({ jsonXmlList, total }, "relatorio")}>
+              onClick={(e) => ExportToCSV({ jsonXmlList, total, faltaSistemaTotalValor, faltaSistemaTotal, notaFaltando }, "relatorio")}>
               Exportar para Excel
             </button>
 
@@ -211,18 +223,18 @@ function App() {
                   return (
                     <tr
                       key={index}
-                      className={`${item.mod === 55 && "bg-zinc-200"} ${item.status === "Faltou sistema" ? "text-white bg-red-500 color " : ""}`}
+                      className={`${item.mod === 55 && "bg-zinc-200"} ${item.status === "Faltou sistema" ? "bg-red-500 color " : ""}`}
                     >
-                      <td className={`px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-white" : ""}`}>
+                      <td className={`px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
                         {item.nnf}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-white" : ""}`}>
+                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
                         {item.chave}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-white" : ""}`}>
+                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
                         {item.dateTime}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-white" : ""}`}>
+                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
                         {formatCurrency(item.total)}
                       </td>
                     </tr>
