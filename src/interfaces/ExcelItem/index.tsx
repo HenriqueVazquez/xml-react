@@ -1,8 +1,10 @@
 export interface ExcelItem {
-  [x: string]: any;
-  numVenda: string;
+  nnf: string;
   chave: string;
   data: string;
+  mod: number;
   status: string;
-  valor: number;
+  total: number;
+  [x: string]: any;
+
 }

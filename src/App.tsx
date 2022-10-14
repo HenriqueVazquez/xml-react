@@ -36,16 +36,29 @@ function App() {
         const xmlToJson = new XMLParser().parseFromString(reader.result);
 
         if (xmlToJson.children[1].children[0].children[2].value) {
-          console.log("Entrou  NFCe")
+
 
           let findTotal = xmlToJson.children[0].children[0].children;
           findTotal = findTotal.find((item: any) => item.name === "total");
+          let total = 0
+
+
+          for (let i = 0; i < xmlToJson.children[0].children[0].children.length; i++) {
+            if (xmlToJson.children[0].children[0].children[i].name === "total") {
+              for (let j = 0; j < xmlToJson.children[0].children[0].children[i].children[0].children.length; j++) {
+                if (xmlToJson.children[0].children[0].children[i].children[0].children[j].name === "vNF") {
+                  total = parseFloat(xmlToJson.children[0].children[0].children[i].children[0].children[j].value);
+                }
+              }
+
+            }
+          }
 
 
           let item = {
             nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
             chave: xmlToJson.children[1]?.children[0].children[2].value,
-            dateTime: format(
+            data: format(
               new Date(
                 xmlToJson.children[0]?.children[0].children[0].children[6].value
               ),
@@ -56,76 +69,75 @@ function App() {
               xmlToJson.children[0]?.children[0].children[0].children[3].value
             ),
             status: "OK",
-            total: parseFloat(findTotal.children[0].children[21]?.value)
-              ? parseFloat(findTotal.children[0].children[21]?.value)
-              : parseFloat(xmlToJson.children[0].children[0].children[11].children[0].children[18]?.value),
+            total: total,
           };
 
 
           setJsonXmlList((prev: any) => [item, ...prev]);
-        }
-        if (xmlToJson.children[0].attributes.Id?.match(/\d/g).join("")) {
+        } else
+
+          if (xmlToJson.children[0].attributes.Id?.match(/\d/g).join("")) {
 
 
 
-          let ano = xmlToJson.children[0].children[0].children[5].value.substr(
-            0,
-            4
-          );
-          let mes = xmlToJson.children[0].children[0].children[5].value.substr(
-            4,
-            2
-          );
-          let dia = xmlToJson.children[0].children[0].children[5].value.substr(
-            6,
-            2
-          );
-          let hora = xmlToJson.children[0].children[0].children[6].value.substr(
-            0,
-            2
-          );
-          let minuto = xmlToJson.children[0].children[0].children[6].value.substr(
-            2,
-            2
-          );
-          let segundo =
-            xmlToJson.children[0].children[0].children[6].value.substr(4, 2);
+            let ano = xmlToJson.children[0].children[0].children[5].value.substr(
+              0,
+              4
+            );
+            let mes = xmlToJson.children[0].children[0].children[5].value.substr(
+              4,
+              2
+            );
+            let dia = xmlToJson.children[0].children[0].children[5].value.substr(
+              6,
+              2
+            );
+            let hora = xmlToJson.children[0].children[0].children[6].value.substr(
+              0,
+              2
+            );
+            let minuto = xmlToJson.children[0].children[0].children[6].value.substr(
+              2,
+              2
+            );
+            let segundo =
+              xmlToJson.children[0].children[0].children[6].value.substr(4, 2);
 
-          let dataTratada = `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}-03:00`;
+            let dataTratada = `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}-03:00`;
 
-          let vCFe = 0
-          if (xmlToJson.children.length) {
-            for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
-              if (xmlToJson.children[0].children[i]?.name === "total") {
-                for (let j = 0; j < xmlToJson.children[0].children[i].children.length; j++) {
-                  if (xmlToJson.children[0].children[i].children[j].name === "vCFe") {
-                    vCFe = parseFloat(xmlToJson.children[0].children[i].children[j].value);
+            let vCFe = 0
+            if (xmlToJson.children.length) {
+              for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
+                if (xmlToJson.children[0].children[i]?.name === "total") {
+                  for (let j = 0; j < xmlToJson.children[0].children[i].children.length; j++) {
+                    if (xmlToJson.children[0].children[i].children[j].name === "vCFe") {
+                      vCFe = parseFloat(xmlToJson.children[0].children[i].children[j].value);
+                    }
                   }
                 }
+
               }
-
             }
+
+
+
+            let item = {
+              nnf: xmlToJson.children[0].children[0].children[4].value,
+              chave: xmlToJson.children[0].attributes.Id.match(/\d/g).join(""),
+              data: format(new Date(dataTratada), "dd/MM/yyyy HH:mm:ss", {
+                locale: ptBR,
+              }),
+              mod: parseInt(
+                xmlToJson.children[0].children[0].children[2].value
+              ),
+              status: "OK",
+
+              total: vCFe,
+            };
+
+            setJsonXmlList((prev: any) => [item, ...prev]);
+
           }
-
-
-
-          let item = {
-            nnf: xmlToJson.children[0].children[0].children[4].value,
-            chave: xmlToJson.children[0].attributes.Id.match(/\d/g).join(""),
-            dateTime: format(new Date(dataTratada), "dd/MM/yyyy HH:mm:ss", {
-              locale: ptBR,
-            }),
-            mod: parseInt(
-              xmlToJson.children[0].children[0].children[2].value
-            ),
-            status: "OK",
-
-            total: vCFe,
-          };
-
-          setJsonXmlList((prev: any) => [item, ...prev]);
-
-        }
 
       };
     });
@@ -138,6 +150,9 @@ function App() {
     const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
     const vendasExcel = Object.values(data);
     let objetoVendasExcel: any = []
+
+
+    console.log(vendasExcel[0].value)
 
     if (vendasExcel[0].__EMPTY_17 === "Chave NFC-e / SAT") {
 
@@ -174,9 +189,9 @@ function App() {
       } else
 
         if (vendasExcel[0]['Numero da Nota']) {
-          console.log("Entoru errado")
+
           vendasExcel.forEach((vendaExcel) => {
-            console.log(vendaExcel)
+
             if (vendaExcel['Numero da Nota'] || vendaExcel['Chave'])
 
 
@@ -191,7 +206,7 @@ function App() {
         } else
           if (vendasExcel[0].__EMPTY_14 === "Chave") {
 
-            console.log(vendasExcel[0])
+
 
             for (let i = 1; i <= (vendasExcel.length - 1); i++) {
               objetoVendasExcel.push({
@@ -220,7 +235,7 @@ function App() {
 
           setNotaFaltando((prev: any) => [vendaXML, ...prev]);
         } else if (vendaXML.chave && vendaXML.total === 0) {
-          console.log("AQUiIiiIi")
+
           vendaXML.status = "Venda cancelada"
 
           setNotaFaltando((prev: any) => [vendaXML, ...prev]);
@@ -236,21 +251,21 @@ function App() {
 
     systemList.forEach(vendaSistema => {
       const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.chave === vendaXML.chave);
-      if (!compararVendas && (vendaSistema.chave || vendaSistema.numVenda)) {
-        if (vendaSistema.chave && vendaSistema.valor > 0) {
-          console.log(vendaSistema)
+      if (!compararVendas && (vendaSistema.chave || vendaSistema.nnf)) {
+        if (vendaSistema.chave && vendaSistema.total > 0) {
+
 
           vendaSistema.status = "Faltou XML"
 
           setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-        } else if (vendaSistema.chave && !vendaSistema.valor) {
-          console.log(vendaSistema)
+        } else if (vendaSistema.chave && vendaSistema.total === 0) {
+
 
           vendaSistema.status = "Venda cancelada"
 
           setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-        } else if (!vendaSistema.chave && vendaSistema.valor > 0) {
-          console.log(vendaSistema)
+        } else if (!vendaSistema.chave && vendaSistema.total > 0) {
+
 
           vendaSistema.status = "Registro Manual"
           setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
@@ -271,7 +286,7 @@ function App() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mb-8">
       <form className="flex items-center">
         <label className="block">
           <span className="sr-only">Choose File</span>
@@ -348,7 +363,7 @@ function App() {
                         {item.chave}
                       </td>
                       <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
-                        {item.dateTime}
+                        {item.data}
                       </td>
                       <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
                         {formatCurrency(item.total)}
@@ -380,43 +395,75 @@ function App() {
           </>
           </section>
           {notaFaltando.length !== 0 ?
-            <h1 className="text-blue-700 font-medium text-2xl mb-4 ">
-              Notas que faltaram
-            </h1>
-            : ""
+            <>
+              <h1 className="text-blue-700 font-medium text-2xl mb-4 ">
+                Notas que faltaram
+              </h1>
+
+              <section className="w-3/5 border rounded-lg">
+
+                <table className="w-full divide-gray-200 ">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                        Nnf
+                      </th>
+                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                        Chave
+                      </th>
+                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                        Data
+                      </th>
+                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
+                        Valor
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-gray-200">
+
+
+
+                    {notaFaltando.length !== 0 ?
+                      notaFaltando.map((item, index: number) => {
+                        return (
+                          <tr
+                            key={index}
+                            className={`${item.mod === 55 && "bg-zinc-200"}`}
+                          >
+                            <td className={`px-6 py-4 text-sm font-medium text-black whitespace-nowrap `}>
+                              {item.nnf}
+                            </td>
+                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
+                              {item.chave}
+                            </td>
+                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap`}>
+                              {item.data}
+                            </td>
+                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
+                              {formatCurrency(item.total)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                      :
+                      ""
+                    }
+
+                  </tbody>
+                </table>
+              </section>
+            </>
+            :
+            ""
           }
-          <div className=" w-6/6 mb-3 pb-4">
-            {notaFaltando.length !== 0 ?
-              notaFaltando.map((item, index: number) => {
-                return (
-                  <tr
-                    key={index}
-                    className={`${item.mod === 55 && "bg-zinc-200"}`}
-                  >
-                    <td className={`px-6 py-4 text-sm font-medium text-black whitespace-nowrap `}>
-                      {item.nnf}
-                    </td>
-                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
-                      {item.chave}
-                    </td>
-                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap`}>
-                      {item.dateTime}
-                    </td>
-                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
-                      {formatCurrency(item.total)}
-                    </td>
-                  </tr>
-                );
-              })
-              :
-              ""
-            }
-          </div>
         </>
       )
       }
+
     </div >
   );
+
 }
 
 export default App;
