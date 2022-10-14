@@ -33,3 +33,60 @@
    
    console.log(`Total de falta no XML: ${teste.toFixed(2)}`);
    */
+
+
+
+
+
+
+
+
+
+
+   if (xmlToJson.children[0].children[4].children[1]?.value && xmlToJson.children[0].children[4].children[1]?.name === "vCFe") {
+    console.log("1")
+
+    total = parseFloat(xmlToJson.children[0].children[4]?.children[1].value)
+
+  } else
+
+    if (xmlToJson.children[0].children[4]?.children[2]?.value && xmlToJson.children[0].children[4]?.children[2]?.name === "vCFe") {
+      console.log("2")
+
+      total = parseFloat(xmlToJson.children[0].children[4].children[2].value)
+
+    } else
+
+      if (xmlToJson.children[0].children[5]?.children[1]?.value && xmlToJson.children[0].children[5]?.children[1]?.name === "vCFe") {
+        console.log("3")
+
+        total = parseFloat(xmlToJson.children[0].children[5]?.children[1]?.value)
+
+      } else
+
+        if (xmlToJson.children[0]?.children[7]?.children[1]?.value && xmlToJson.children[0]?.children[7]?.children[1]?.name === "vCFe") {
+
+          console.log("4")
+          total = parseFloat(xmlToJson.children[0].children[7].children[1]?.value)
+        } else
+
+          if (xmlToJson.children[0].children[6]?.children[1]?.value && xmlToJson.children[0].children[6]?.children[1]?.name === "vCFe") {
+            console.log("5")
+
+            total = parseFloat(xmlToJson.children[0].children[6]?.children[1]?.value)
+
+          } else
+
+            if (xmlToJson.children[0].children[9]?.children[1]?.value && xmlToJson.children[0].children[9]?.children[1]?.name === "vCFe") {
+              console.log("6d")
+
+              total = parseFloat(xmlToJson.children[0].children[9]?.children[1]?.value)
+
+            } else
+
+              if (xmlToJson.children[0].children[14].children[1].value && xmlToJson.children[0].children[14].children[1].value === "vCFe") {
+                console.log("7")
+
+                total = parseFloat(xmlToJson.children[0].children[14].children[1].value)
+
+              }

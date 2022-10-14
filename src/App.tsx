@@ -35,27 +35,98 @@ function App() {
       reader.onloadend = () => {
         const xmlToJson = new XMLParser().parseFromString(reader.result);
 
-        let findTotal = xmlToJson.children[0].children[0].children;
-        findTotal = findTotal.find((item: any) => item.name === "total");
+        if (xmlToJson.children[1].children[0].children[2].value) {
+          console.log("Entrou  NFCe")
 
-        let item = {
-          nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
-          chave: xmlToJson.children[1]?.children[0].children[2].value,
-          dateTime: format(
-            new Date(
-              xmlToJson.children[0]?.children[0].children[0].children[6].value
+          let findTotal = xmlToJson.children[0].children[0].children;
+          findTotal = findTotal.find((item: any) => item.name === "total");
+
+
+          let item = {
+            nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
+            chave: xmlToJson.children[1]?.children[0].children[2].value,
+            dateTime: format(
+              new Date(
+                xmlToJson.children[0]?.children[0].children[0].children[6].value
+              ),
+              "dd/MM/yyyy HH:mm:ss",
+              { locale: ptBR }
             ),
-            "dd/MM/yyyy HH:mm:ss",
-            { locale: ptBR }
-          ),
-          mod: parseInt(
-            xmlToJson.children[0]?.children[0].children[0].children[3].value
-          ),
-          status: "Passou",
-          total: parseFloat(findTotal.children[0].children[21].value),
-        };
+            mod: parseInt(
+              xmlToJson.children[0]?.children[0].children[0].children[3].value
+            ),
+            status: "OK",
+            total: parseFloat(findTotal.children[0].children[21]?.value)
+              ? parseFloat(findTotal.children[0].children[21]?.value)
+              : parseFloat(xmlToJson.children[0].children[0].children[11].children[0].children[18]?.value),
+          };
 
-        setJsonXmlList((prev: any) => [item, ...prev]);
+
+          setJsonXmlList((prev: any) => [item, ...prev]);
+        }
+        if (xmlToJson.children[0].attributes.Id?.match(/\d/g).join("")) {
+
+
+
+          let ano = xmlToJson.children[0].children[0].children[5].value.substr(
+            0,
+            4
+          );
+          let mes = xmlToJson.children[0].children[0].children[5].value.substr(
+            4,
+            2
+          );
+          let dia = xmlToJson.children[0].children[0].children[5].value.substr(
+            6,
+            2
+          );
+          let hora = xmlToJson.children[0].children[0].children[6].value.substr(
+            0,
+            2
+          );
+          let minuto = xmlToJson.children[0].children[0].children[6].value.substr(
+            2,
+            2
+          );
+          let segundo =
+            xmlToJson.children[0].children[0].children[6].value.substr(4, 2);
+
+          let dataTratada = `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}-03:00`;
+
+          let vCFe = 0
+          if (xmlToJson.children.length) {
+            for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
+              if (xmlToJson.children[0].children[i]?.name === "total") {
+                for (let j = 0; j < xmlToJson.children[0].children[i].children.length; j++) {
+                  if (xmlToJson.children[0].children[i].children[j].name === "vCFe") {
+                    vCFe = parseFloat(xmlToJson.children[0].children[i].children[j].value);
+                  }
+                }
+              }
+
+            }
+          }
+
+
+
+          let item = {
+            nnf: xmlToJson.children[0].children[0].children[4].value,
+            chave: xmlToJson.children[0].attributes.Id.match(/\d/g).join(""),
+            dateTime: format(new Date(dataTratada), "dd/MM/yyyy HH:mm:ss", {
+              locale: ptBR,
+            }),
+            mod: parseInt(
+              xmlToJson.children[0].children[0].children[2].value
+            ),
+            status: "OK",
+
+            total: vCFe,
+          };
+
+          setJsonXmlList((prev: any) => [item, ...prev]);
+
+        }
+
       };
     });
   };
@@ -70,12 +141,13 @@ function App() {
 
     if (vendasExcel[0].__EMPTY_17 === "Chave NFC-e / SAT") {
 
+
       for (let i = 1; i <= (vendasExcel.length - 1); i++) {
         if (vendasExcel[i]?.__EMPTY_17) {
           objetoVendasExcel.push({
             number: vendasExcel[i].__EMPTY,
             chave: vendasExcel[i].__EMPTY_17,
-            status: "Passou",
+            status: "OK",
             total: vendasExcel[i].__EMPTY_13,
 
           })
@@ -85,33 +157,54 @@ function App() {
     }
 
     if (vendasExcel[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
+
       if (vendasExcel[0].CHAVE) {
+
 
         vendasExcel.forEach((vendaExcel) => {
 
           objetoVendasExcel.push({
             number: vendaExcel.NUMERO,
             chave: vendaExcel.CHAVE,
-            status: "Passou",
+            status: "OK",
             total: vendaExcel.VALOR,
           });
 
         })
-      }
+      } else
 
-      else {
-        vendasExcel.forEach((vendaExcel) => {
-          if (vendaExcel['Numero da Nota'] || vendaExcel['Chave'])
+        if (vendasExcel[0]['Numero da Nota']) {
+          console.log("Entoru errado")
+          vendasExcel.forEach((vendaExcel) => {
+            console.log(vendaExcel)
+            if (vendaExcel['Numero da Nota'] || vendaExcel['Chave'])
 
-            objetoVendasExcel.push({
-              number: vendaExcel['Numero da Nota'],
-              chave: vendaExcel['Chave'],
-              status: "Passou",
-              total: vendaExcel['Valor Total'],
-            });
 
-        });
-      }
+              objetoVendasExcel.push({
+                number: vendaExcel['Numero da Nota'],
+                chave: vendaExcel['Chave'],
+                status: "OK",
+                total: vendaExcel['Valor Total'],
+              });
+
+          });
+        } else
+          if (vendasExcel[0].__EMPTY_14 === "Chave") {
+
+            console.log(vendasExcel[0])
+
+            for (let i = 1; i <= (vendasExcel.length - 1); i++) {
+              objetoVendasExcel.push({
+                number: vendasExcel[i].__EMPTY,
+                chave: vendasExcel[i].__EMPTY_14,
+                status: "OK",
+                total: vendasExcel[i].__EMPTY_11,
+              });
+
+            };
+
+
+          }
 
     }
     setSystemList(objetoVendasExcel);
@@ -121,12 +214,22 @@ function App() {
     jsonXmlList.forEach(vendaXML => {
       const compararVendas = systemList.find(vendaSistema => vendaXML.chave === vendaSistema.chave);
       if (!compararVendas && (vendaXML.chave || vendaXML.nnf)) {
-        console.log(vendaXML)
+        if (vendaXML.chave && vendaXML.total > 0) {
 
-        vendaXML.status = "Faltou sistema"
+          vendaXML.status = "Faltou sistema"
 
-        setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+        } else if (vendaXML.chave && vendaXML.total === 0) {
+          console.log("AQUiIiiIi")
+          vendaXML.status = "Venda cancelada"
 
+          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+
+        } else if (!vendaXML.chave && vendaXML.total > 0) {
+          vendaXML.status = "Registro manual"
+
+          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+        }
       }
 
     });
@@ -134,11 +237,24 @@ function App() {
     systemList.forEach(vendaSistema => {
       const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.chave === vendaXML.chave);
       if (!compararVendas && (vendaSistema.chave || vendaSistema.numVenda)) {
-        console.log(vendaSistema)
+        if (vendaSistema.chave && vendaSistema.valor > 0) {
+          console.log(vendaSistema)
 
-        vendaSistema.status = "Faltou XML"
+          vendaSistema.status = "Faltou XML"
 
-        setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+        } else if (vendaSistema.chave && !vendaSistema.valor) {
+          console.log(vendaSistema)
+
+          vendaSistema.status = "Venda cancelada"
+
+          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+        } else if (!vendaSistema.chave && vendaSistema.valor > 0) {
+          console.log(vendaSistema)
+
+          vendaSistema.status = "Registro Manual"
+          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+        }
 
       }
 
@@ -152,7 +268,7 @@ function App() {
   const total = formatCurrency(handleCalcTotal(jsonXmlList));
   const faltaSistemaTotalValor = formatCurrency(handleCalcTotal(notaFaltando));
   const faltaSistemaTotal = notaFaltando.length;
-  console.log(typeof faltaSistemaTotalValor)
+
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -225,16 +341,16 @@ function App() {
                       key={index}
                       className={`${item.mod === 55 && "bg-zinc-200"} ${item.status === "Faltou sistema" ? "bg-red-500 color " : ""}`}
                     >
-                      <td className={`px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
+                      <td className={`px-6 py-4 text-sm font-medium   whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : "text-black"}`}>
                         {item.nnf}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
+                      <td className={`px-6 py-4 text-sm   whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : "text-black"}`}>
                         {item.chave}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
+                      <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
                         {item.dateTime}
                       </td>
-                      <td className={`px-6 py-4 text-sm text-gray-800 whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : ""}`}>
+                      <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
                         {formatCurrency(item.total)}
                       </td>
                     </tr>
@@ -244,7 +360,7 @@ function App() {
             </table>
           </section>
 
-          <section className="w-full flex flex-col items-center justify-center m-8">
+          <section className="w-full flex flex-col items-center justify-center m-8"><>
             <h1 className="text-blue-700 font-medium text-2xl">
               Totalizadores
             </h1>
@@ -253,12 +369,49 @@ function App() {
               {handleFilterXmlByType(jsonXmlList, 55)}
               {handleFilterXmlByType(jsonXmlList, 65)}
 
+
               <div className="mx-2 flex  flex-col items-center justify-center">
                 <div>Total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
                 <div>Arquivos: {jsonXmlList.length}</div>
               </div>
+
             </div>
+
+          </>
           </section>
+          {notaFaltando.length !== 0 ?
+            <h1 className="text-blue-700 font-medium text-2xl mb-4 ">
+              Notas que faltaram
+            </h1>
+            : ""
+          }
+          <div className=" w-6/6 mb-3 pb-4">
+            {notaFaltando.length !== 0 ?
+              notaFaltando.map((item, index: number) => {
+                return (
+                  <tr
+                    key={index}
+                    className={`${item.mod === 55 && "bg-zinc-200"}`}
+                  >
+                    <td className={`px-6 py-4 text-sm font-medium text-black whitespace-nowrap `}>
+                      {item.nnf}
+                    </td>
+                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
+                      {item.chave}
+                    </td>
+                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap`}>
+                      {item.dateTime}
+                    </td>
+                    <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
+                      {formatCurrency(item.total)}
+                    </td>
+                  </tr>
+                );
+              })
+              :
+              ""
+            }
+          </div>
         </>
       )
       }
