@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
-
-import { format } from "date-fns";
-import { handleCalcTotal } from "./functions/HandleCalcTotal";
-import { handleFilterXmlByType } from "./functions/handleFilterXmlByType";
-
-import ptBR from "date-fns/locale/pt-BR";
-import XMLParser from "react-xml-parser";
-import { read, utils } from 'xlsx';
-
+import { handleCalcTotal } from "./components/HandleCalcTotal";
 
 import formatCurrency from "../src/ultils/formatCurrency";
 
-import ExportToCSV from "./functions/ExportToCSV";
-
+import ExportToCSV from "./components/ExportToCSV";
 
 import "./styles/main.css";
 import { IXmlItem } from "./interfaces/IXmlItem";
 import { ExcelItem } from "./interfaces/ExcelItem";
+import ListItens from "./components/ListItens";
+import HeaderTable from "./components/HeaderTable";
+import { Totalizers } from "./components/Totalizers";
+import { HandleFileChange } from "./components/HandleFileChange";
+import HandleFileChangeExcel from "./components/HandleFileChangeExcel";
+import { LookForDivergences } from "./components/LookForDivergences";
 
 
 function App() {
@@ -24,265 +21,27 @@ function App() {
   const [systemList, setSystemList] = useState<ExcelItem[]>([]);
   const [notaFaltando, setNotaFaltando] = useState<any[]>([]);
 
+  const total = formatCurrency(handleCalcTotal(jsonXmlList));
+  const faltaSistemaTotalValor = formatCurrency(handleCalcTotal(notaFaltando));
+  const faltaSistemaTotal = notaFaltando.length;
+
 
 
   const handleFileChange = (event: any) => {
-    const itensCopy = Array.from(event.target.files);
-
-    itensCopy.forEach((itemXml: any) => {
-      let reader = new FileReader();
-      reader.readAsText(itemXml, "windows-1251");
-      reader.onloadend = () => {
-        const xmlToJson = new XMLParser().parseFromString(reader.result);
-
-        if (xmlToJson.children[1].children[0].children[2].value) {
-
-
-          let findTotal = xmlToJson.children[0].children[0].children;
-          findTotal = findTotal.find((item: any) => item.name === "total");
-          let total = 0
-
-
-          for (let i = 0; i < xmlToJson.children[0].children[0].children.length; i++) {
-            if (xmlToJson.children[0].children[0].children[i].name === "total") {
-              for (let j = 0; j < xmlToJson.children[0].children[0].children[i].children[0].children.length; j++) {
-                if (xmlToJson.children[0].children[0].children[i].children[0].children[j].name === "vNF") {
-                  total = parseFloat(xmlToJson.children[0].children[0].children[i].children[0].children[j].value);
-                }
-              }
-
-            }
-          }
-
-
-          let item = {
-            nnf: xmlToJson.children[0]?.children[0].children[0].children[5].value,
-            chave: xmlToJson.children[1]?.children[0].children[2].value,
-            data: format(
-              new Date(
-                xmlToJson.children[0]?.children[0].children[0].children[6].value
-              ),
-              "dd/MM/yyyy HH:mm:ss",
-              { locale: ptBR }
-            ),
-            mod: parseInt(
-              xmlToJson.children[0]?.children[0].children[0].children[3].value
-            ),
-            status: "OK",
-            total: total,
-          };
-
-
-          setJsonXmlList((prev: any) => [item, ...prev]);
-        } else
-
-          if (xmlToJson.children[0].attributes.Id?.match(/\d/g).join("")) {
-
-
-
-            let ano = xmlToJson.children[0].children[0].children[5].value.substr(
-              0,
-              4
-            );
-            let mes = xmlToJson.children[0].children[0].children[5].value.substr(
-              4,
-              2
-            );
-            let dia = xmlToJson.children[0].children[0].children[5].value.substr(
-              6,
-              2
-            );
-            let hora = xmlToJson.children[0].children[0].children[6].value.substr(
-              0,
-              2
-            );
-            let minuto = xmlToJson.children[0].children[0].children[6].value.substr(
-              2,
-              2
-            );
-            let segundo =
-              xmlToJson.children[0].children[0].children[6].value.substr(4, 2);
-
-            let dataTratada = `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}-03:00`;
-
-            let vCFe = 0
-            if (xmlToJson.children.length) {
-              for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
-                if (xmlToJson.children[0].children[i]?.name === "total") {
-                  for (let j = 0; j < xmlToJson.children[0].children[i].children.length; j++) {
-                    if (xmlToJson.children[0].children[i].children[j].name === "vCFe") {
-                      vCFe = parseFloat(xmlToJson.children[0].children[i].children[j].value);
-                    }
-                  }
-                }
-
-              }
-            }
-
-
-
-            let item = {
-              nnf: xmlToJson.children[0].children[0].children[4].value,
-              chave: xmlToJson.children[0].attributes.Id.match(/\d/g).join(""),
-              data: format(new Date(dataTratada), "dd/MM/yyyy HH:mm:ss", {
-                locale: ptBR,
-              }),
-              mod: parseInt(
-                xmlToJson.children[0].children[0].children[2].value
-              ),
-              status: "OK",
-
-              total: vCFe,
-            };
-
-            setJsonXmlList((prev: any) => [item, ...prev]);
-
-          }
-
-      };
-    });
+    HandleFileChange(event, setJsonXmlList)
   };
 
 
   const handleFileChangeExcel = async (event: any) => {
-    const f = await (event.target.files[0]).arrayBuffer();
-    const wb = read(f);
-    const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
-    const vendasExcel = Object.values(data);
-    let objetoVendasExcel: any = []
-
-
-    console.log(vendasExcel[0].value)
-
-    if (vendasExcel[0].__EMPTY_17 === "Chave NFC-e / SAT") {
-
-
-      for (let i = 1; i <= (vendasExcel.length - 1); i++) {
-        if (vendasExcel[i]?.__EMPTY_17) {
-          objetoVendasExcel.push({
-            number: vendasExcel[i].__EMPTY,
-            chave: vendasExcel[i].__EMPTY_17,
-            status: "OK",
-            total: vendasExcel[i].__EMPTY_13,
-
-          })
-        }
-      }
-
-    }
-
-    if (vendasExcel[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
-
-      if (vendasExcel[0].CHAVE) {
-
-
-        vendasExcel.forEach((vendaExcel) => {
-
-          objetoVendasExcel.push({
-            number: vendaExcel.NUMERO,
-            chave: vendaExcel.CHAVE,
-            status: "OK",
-            total: vendaExcel.VALOR,
-          });
-
-        })
-      } else
-
-        if (vendasExcel[0]['Numero da Nota']) {
-
-          vendasExcel.forEach((vendaExcel) => {
-
-            if (vendaExcel['Numero da Nota'] || vendaExcel['Chave'])
-
-
-              objetoVendasExcel.push({
-                number: vendaExcel['Numero da Nota'],
-                chave: vendaExcel['Chave'],
-                status: "OK",
-                total: vendaExcel['Valor Total'],
-              });
-
-          });
-        } else
-          if (vendasExcel[0].__EMPTY_14 === "Chave") {
-
-
-
-            for (let i = 1; i <= (vendasExcel.length - 1); i++) {
-              objetoVendasExcel.push({
-                number: vendasExcel[i].__EMPTY,
-                chave: vendasExcel[i].__EMPTY_14,
-                status: "OK",
-                total: vendasExcel[i].__EMPTY_11,
-              });
-
-            };
-
-
-          }
-
-    }
-    setSystemList(objetoVendasExcel);
+    HandleFileChangeExcel(event, setSystemList)
   }
 
   useEffect(() => {
-    jsonXmlList.forEach(vendaXML => {
-      const compararVendas = systemList.find(vendaSistema => vendaXML.chave === vendaSistema.chave);
-      if (!compararVendas && (vendaXML.chave || vendaXML.nnf)) {
-        if (vendaXML.chave && vendaXML.total > 0) {
-
-          vendaXML.status = "Faltou sistema"
-
-          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
-        } else if (vendaXML.chave && vendaXML.total === 0) {
-
-          vendaXML.status = "Venda cancelada"
-
-          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
-
-        } else if (!vendaXML.chave && vendaXML.total > 0) {
-          vendaXML.status = "Registro manual"
-
-          setNotaFaltando((prev: any) => [vendaXML, ...prev]);
-        }
-      }
-
-    });
-
-    systemList.forEach(vendaSistema => {
-      const compararVendas = jsonXmlList.find(vendaXML => vendaSistema.chave === vendaXML.chave);
-      if (!compararVendas && (vendaSistema.chave || vendaSistema.nnf)) {
-        if (vendaSistema.chave && vendaSistema.total > 0) {
-
-
-          vendaSistema.status = "Faltou XML"
-
-          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-        } else if (vendaSistema.chave && vendaSistema.total === 0) {
-
-
-          vendaSistema.status = "Venda cancelada"
-
-          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-        } else if (!vendaSistema.chave && vendaSistema.total > 0) {
-
-
-          vendaSistema.status = "Registro Manual"
-          setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-        }
-
-      }
-
-    });
-
-
+    LookForDivergences(jsonXmlList, systemList, setNotaFaltando)
   }, [systemList]);
 
 
 
-  const total = formatCurrency(handleCalcTotal(jsonXmlList));
-  const faltaSistemaTotalValor = formatCurrency(handleCalcTotal(notaFaltando));
-  const faltaSistemaTotal = notaFaltando.length;
 
 
   return (
@@ -314,86 +73,43 @@ function App() {
           <div
             className="flex-column"
           >
-            <button
-              className="bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full m-8 cursor-pointer hover:bg-blue-100"
-              onClick={(e) => ExportToCSV({ jsonXmlList, total, faltaSistemaTotalValor, faltaSistemaTotal, notaFaltando }, "relatorio")}>
-              Exportar para Excel
-            </button>
 
 
-            <input
-              className=" text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 m-8 cursor-pointer"
-              type="file"
-              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv, application/vnd.ms-excel"
-              id="input_dom_element"
-              onChange={handleFileChangeExcel}
+            <label className="block mb-4">
+              <span className="rounded-full bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full m-8 cursor-pointer hover:bg-blue-100">Enviar consulta de fechamento ou sentença vendas para comparar</span>
+              <input
+                className="sr-only mb-4 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 m-8 cursor-pointer"
+                type="file"
+                multiple
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .csv, application/vnd.ms-excel"
+                id="input_dom_element"
+                onChange={handleFileChangeExcel}
+              />
+            </label>
 
-            />
 
           </div>
           <section className="w-3/5 border rounded-lg">
             <table className="w-full divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                    Nnf
-                  </th>
-                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                    Chave
-                  </th>
-                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                    Data
-                  </th>
-                  <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                    Valor
-                  </th>
-                </tr>
-              </thead>
+              <HeaderTable />
               <tbody className="divide-y divide-gray-200">
                 {jsonXmlList.map((item, index: number) => {
                   return (
-                    <tr
-                      key={index}
-                      className={`${item.mod === 55 && "bg-zinc-200"} ${item.status === "Faltou sistema" ? "bg-red-500 color " : ""}`}
-                    >
-                      <td className={`px-6 py-4 text-sm font-medium   whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : "text-black"}`}>
-                        {item.nnf}
-                      </td>
-                      <td className={`px-6 py-4 text-sm   whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : "text-black"}`}>
-                        {item.chave}
-                      </td>
-                      <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
-                        {item.data}
-                      </td>
-                      <td className={`px-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? "text-sky-50" : " text-black"}`}>
-                        {formatCurrency(item.total)}
-                      </td>
-                    </tr>
+                    ListItens(item, index)
                   );
                 })}
               </tbody>
             </table>
           </section>
-
-          <section className="w-full flex flex-col items-center justify-center m-8"><>
-            <h1 className="text-blue-700 font-medium text-2xl">
-              Totalizadores
-            </h1>
-
-            <div className="m-5 flex items-center justify-center font-medium">
-              {handleFilterXmlByType(jsonXmlList, 55)}
-              {handleFilterXmlByType(jsonXmlList, 65)}
+          <button
+            className="bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full m-8 cursor-pointer hover:bg-blue-100"
+            onClick={(e) => ExportToCSV({ jsonXmlList, total, faltaSistemaTotalValor, faltaSistemaTotal, notaFaltando }, "relatorio")}>
+            Exportar para Excel
+          </button>
+          {Totalizers(jsonXmlList)}
 
 
-              <div className="mx-2 flex  flex-col items-center justify-center">
-                <div>Total: {formatCurrency(handleCalcTotal(jsonXmlList))}</div>
-                <div>Arquivos: {jsonXmlList.length}</div>
-              </div>
 
-            </div>
-
-          </>
-          </section>
           {notaFaltando.length !== 0 ?
             <>
               <h1 className="text-blue-700 font-medium text-2xl mb-4 ">
@@ -403,47 +119,16 @@ function App() {
               <section className="w-3/5 border rounded-lg">
 
                 <table className="w-full divide-gray-200 ">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                        Nnf
-                      </th>
-                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                        Chave
-                      </th>
-                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                        Data
-                      </th>
-                      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-                        Valor
-                      </th>
-                    </tr>
-                  </thead>
+                  <HeaderTable />
 
                   <tbody className="divide-y divide-gray-200">
 
 
 
                     {notaFaltando.length !== 0 ?
-                      notaFaltando.map((item, index: number) => {
+                      notaFaltando.map((item: ExcelItem, index: number) => {
                         return (
-                          <tr
-                            key={index}
-                            className={`${item.mod === 55 && "bg-zinc-200"}`}
-                          >
-                            <td className={`px-6 py-4 text-sm font-medium text-black whitespace-nowrap `}>
-                              {item.nnf}
-                            </td>
-                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
-                              {item.chave}
-                            </td>
-                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap`}>
-                              {item.data}
-                            </td>
-                            <td className={`px-6 py-4 text-sm text-black whitespace-nowrap `}>
-                              {formatCurrency(item.total)}
-                            </td>
-                          </tr>
+                          ListItens(item, index)
                         );
                       })
                       :
