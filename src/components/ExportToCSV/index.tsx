@@ -11,7 +11,7 @@ export default function ExportToCSV(csvData: any, fileName: string) {
 
   const ws = XLSX.utils.json_to_sheet(jsonXmlList);
   const ws2 = XLSX.utils.json_to_sheet(missingNote);
-  console.log(missingSystemAmount)
+ 
 
 
   XLSX.utils.sheet_add_aoa(ws, [["NNF", "Chave", "Data", "Modelo", "Status", "Total"]], { origin: "A1" });

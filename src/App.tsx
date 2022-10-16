@@ -59,7 +59,9 @@ function App() {
       <form className="flex items-center">
 
         <label className="block mt-5 mb-8">
-          <span className="
+          <span
+
+            className="
           bg-blue-50
           text-blue-700 
           font-semibold py-6 px-8           
@@ -109,13 +111,15 @@ function App() {
               </span>
               <input
                 className="sr-only  cursor-pointer"
-
+                id="sendExcel"
                 type="file"
                 multiple
                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
                  .csv, application/vnd.ms-excel"
-                id="sendExcel"
+
+
                 onChange={handleFileChangeExcel}
+
               />
             </label>
 
@@ -178,6 +182,9 @@ function App() {
                   </tbody>
                 </table>
               </section>
+              {
+                Totalizers(missingNote)
+              }
             </>
             :
             ""

@@ -5,8 +5,15 @@ export function ClearCache(setJsonXmlList: any, setSystemList: any, setMissingNo
   setSystemList([])
   setMissingNote([])
 
+
+  console.log(fileInputXML)
+
+  // @ts-ignore: Object is possibly 'null'.
   fileInputXML.value = "";
+  // @ts-ignore: Object is possibly 'null'.
   fileInputExcel.value = "";
+
+
 
 
 }

@@ -10,7 +10,7 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
   const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
   const vendasExcel = Object.values(data);
   let objetoVendasExcel: any = []
-  console.log(vendasExcel[0]);
+
 
 
 
@@ -19,7 +19,7 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
 
 
     for (let i = 1; i <= (vendasExcel.length - 1); i++) {
-      if (vendasExcel[i]?.__EMPTY_17) {
+      if (vendasExcel[i].__EMPTY_1) {
 
         objetoVendasExcel.push({
           nnf: vendasExcel[i].__EMPTY,
