@@ -1,53 +1,74 @@
 import { ExcelItem } from "../../interfaces/ExcelItem";
 import { IXmlItem } from "../../interfaces/IXmlItem";
 
-export function LookForDivergences(jsonXmlList: any, systemList: any, setNotaFaltando: any) {
+export function LookForDivergences(jsonXmlList: any, systemList: any, setMissingNotes: any, missingNotes: any) {
   jsonXmlList.forEach((vendaXML: IXmlItem) => {
-    const compararVendas = systemList.find((vendaSistema: { chave: string; }) => vendaXML.chave === vendaSistema.chave);
-    if (!compararVendas && (vendaXML.chave || vendaXML.nnf)) {
-      if (vendaXML.chave && vendaXML.total > 0) {
+    const checkIfAlreadyAdded = missingNotes.find((missingNote: { chave: string; }) => vendaXML.chave === missingNote.chave);
 
-        vendaXML.status = "Faltou sistema"
 
-        setNotaFaltando((prev: any) => [vendaXML, ...prev]);
-      } else if (vendaXML.chave && vendaXML.total === 0) {
+    if (!checkIfAlreadyAdded) {
+      const compararVendas = systemList.find((vendaSistema: { chave: string; }) => vendaXML.chave === vendaSistema.chave);
 
-        vendaXML.status = "Venda cancelada"
+      if (!compararVendas) {
+        if (vendaXML.chave || vendaXML.nnf) {
+          if (vendaXML.total === 0) {
 
-        setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+            vendaXML.status = "Venda cancelada"
 
-      } else if (!vendaXML.chave && vendaXML.total > 0) {
-        vendaXML.status = "Registro manual"
+            setMissingNotes((prev: any) => [vendaXML, ...prev]);
 
-        setNotaFaltando((prev: any) => [vendaXML, ...prev]);
+          }
+          else if ((vendaXML.chave) && (vendaXML.total > 0)) {
+            vendaXML.status = "Faltou sistema"
+
+            setMissingNotes((prev: any) => [vendaXML, ...prev]);
+
+          }
+        }
+        else if (!vendaXML.chave && vendaXML.total > 0) {
+          vendaXML.status = "Registro manual"
+
+          setMissingNotes((prev: any) => [vendaXML, ...prev]);
+        }
+
       }
     }
+
 
   });
 
   systemList.forEach((vendaSistema: ExcelItem) => {
-    const compararVendas = jsonXmlList.find((vendaXML: { chave: string; }) => vendaSistema.chave === vendaXML.chave);
-    if (!compararVendas && (vendaSistema.chave || vendaSistema.nnf)) {
-      if (vendaSistema.chave && vendaSistema.total > 0) {
+    const checkIfAlreadyAdded = missingNotes.find((missingNote: { chave: string; }) => vendaSistema.chave === missingNote.chave);
+    console.log(vendaSistema);
+
+    if (!checkIfAlreadyAdded) {
+      const compararVendas = jsonXmlList.find((vendaXML: { chave: string; }) => vendaSistema.chave === vendaXML.chave);
+      if (!compararVendas) {
+        if (vendaSistema.chave || vendaSistema.nnf) {
+          if (vendaSistema.chave && vendaSistema.total == 0) {
 
 
-        vendaSistema.status = "Faltou XML"
+            vendaSistema.status = "Venda cancelada"
 
-        setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-      } else if (vendaSistema.chave && vendaSistema.total == 0) {
-
-
-        vendaSistema.status = "Venda cancelada"
-
-        setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
-      } else if (!vendaSistema.chave && vendaSistema.total > 0) {
+            setMissingNotes((prev: any) => [vendaSistema, ...prev]);
+          }
+          else if (vendaSistema.chave && vendaSistema.total > 0) {
 
 
-        vendaSistema.status = "Registro Manual"
-        setNotaFaltando((prev: any) => [vendaSistema, ...prev]);
+            vendaSistema.status = "Faltou XML"
+
+
+            setMissingNotes((prev: any) => [vendaSistema, ...prev]);
+          }
+        }
+        else if (!vendaSistema.chave && vendaSistema.total > 0) {
+
+
+          vendaSistema.status = "Registro Manual"
+          setMissingNotes((prev: any) => [vendaSistema, ...prev]);
+        }
+
       }
-
     }
-
   });
 }

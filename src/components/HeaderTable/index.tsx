@@ -1,27 +1,26 @@
-import React from 'react';
 
-// import { Container } from './styles';
 
-const HeaderTable: any = () => {
-  <thead className="bg-gray-50">
-    <tr>
-      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-        Nnf
-      </th>
-      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-        Chave
-      </th>
-      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-        Data
-      </th>
-      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-        Valor
-      </th>
-      <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">
-        Status
-      </th>
-    </tr>
-  </thead>
+export function HeaderTable() {
+  return (
+    <thead className=" bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
+      <tr className=" bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
+        <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase ">
+          Nnf
+        </th>
+        <th className="px-6 py-3 text-base font-black text-left   text-gray-200 uppercase ">
+          Chave
+        </th>
+        <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase font-s">
+          Data
+        </th>
+        <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase ">
+          Valor
+        </th>
+        <th className="px-6 py-3 text-base font-black text-left  text-gray-200 uppercase ">
+          Status
+        </th>
+      </tr>
+    </thead>
+  )
 }
 
-export default HeaderTable;

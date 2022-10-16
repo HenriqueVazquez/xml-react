@@ -16,12 +16,12 @@ export function handleFilterXmlByType(items: IXmlItem[], modelo: number) {
   });
 
   return (
-    <div className="m-5 flex flex-col items-center justify-center font-medium">
-      <div className="mx-2">
+    <div className="m-5 flex flex-col items-center justify-center font-black font-sans">
+      <div className="mx-2 font-black font-sans">
         {modelo === 55 ? `Total NFE:  ${formatCurrency(valorTotalNfe)} ` : `Total NFC-e/SAT:  ${formatCurrency(valorTotalNfceSat)}`}
 
       </div>
-      <div className="mx-2">Arquivos:  {modelo === 55 ? filterNotesNFE.length : filterNotes.length}</div>
+      <div className="mx-2 font-black ">Arquivos:  {modelo === 55 ? filterNotesNFE.length : filterNotes.length}</div>
     </div>
   );
 }

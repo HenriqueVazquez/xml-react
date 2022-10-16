@@ -3,8 +3,7 @@ export interface ExcelItem {
   chave: string;
   data: string;
   mod: number;
-  status: string;
   total: number;
   [x: string]: any;
-
+  status: string;
 }
