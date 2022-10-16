@@ -2,9 +2,9 @@
 
 export function HeaderTable() {
   return (
-    <thead className=" bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
-      <tr className=" bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
-        <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase ">
+    <thead className="bg-gradient-to-r from-blue-400 to-blue-600 mb-3">
+      <tr className=" bg-gradient-to-r from-blue-400 to-blue-600 ">
+        <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase rounded-l-full ">
           Nnf
         </th>
         <th className="px-6 py-3 text-base font-black text-left   text-gray-200 uppercase ">
@@ -16,7 +16,7 @@ export function HeaderTable() {
         <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase ">
           Valor
         </th>
-        <th className="px-6 py-3 text-base font-black text-left  text-gray-200 uppercase ">
+        <th className="px-6 py-3 text-base font-black text-left  text-gray-200 uppercase rounded-r-full">
           Status
         </th>
       </tr>

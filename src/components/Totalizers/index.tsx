@@ -8,7 +8,7 @@ import { handleFilterXmlByType } from '../HandleFilterXmlByType';
 export function Totalizers(jsonXmlList: any) {
   return (
     <section className="w-full flex flex-col items-center justify-center m-8 font-normal" > <>
-      <h1 className="text-blue-700 font-normal text-2xl font-permanent drop-shadow-2xl">
+      <h1 className="text-blue-700 font-black text-2xl font-sans drop-shadow-2xl">
         Totalizadores
       </h1>
 
