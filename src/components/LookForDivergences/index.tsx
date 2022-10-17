@@ -6,17 +6,17 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
   jsonXmlList.forEach((vendaXML: IXmlItem) => {
 
 
-    const buscarTotalDiferente = systemList.find((vendaSistema: { total: Number, chave: string; }) => vendaXML.chave === vendaSistema.chave && vendaXML.total > 0 && vendaSistema.total === 0);
+    const searchTotalDifference = systemList.find((vendaSistema: { total: Number, chave: string; }) => vendaXML.chave === vendaSistema.chave && vendaXML.total > 0 && vendaSistema.total === 0);
     const checkIfAlreadyAdded = missingNotes.find((missingNote: { chave: string; }) => vendaXML.chave === missingNote.chave);
 
 
     if (!checkIfAlreadyAdded) {
-      const compararVendas = systemList.find((vendaSistema: { chave: string; }) => vendaXML.chave === vendaSistema.chave);
-      console.log(buscarTotalDiferente);
+      const compareSales = systemList.find((vendaSistema: { chave: string; }) => vendaXML.chave === vendaSistema.chave);
+      console.log(searchTotalDifference);
 
-      if (!compararVendas || buscarTotalDiferente) {
+      if (!compareSales || searchTotalDifference) {
         if (vendaXML.chave || vendaXML.nnf) {
-          if (buscarTotalDiferente) {
+          if (searchTotalDifference) {
             console.log("Entrou")
 
             vendaXML.status = "Venda cancelada"
@@ -41,8 +41,8 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
 
 
     if (!checkIfAlreadyAdded) {
-      const compararVendas = jsonXmlList.find((vendaXML: { chave: string; }) => vendaSistema.chave === vendaXML.chave);
-      if (!compararVendas) {
+      const compareSales = jsonXmlList.find((vendaXML: { chave: string; }) => vendaSistema.chave === vendaXML.chave);
+      if (!compareSales) {
         if (vendaSistema.chave || vendaSistema.nnf) {
 
           if (!vendaSistema.chave && vendaSistema.total > 0) {

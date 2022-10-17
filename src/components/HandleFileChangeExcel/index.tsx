@@ -8,26 +8,26 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
   const f = await (event.target.files[0]).arrayBuffer();
   const wb = read(f);
   const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
-  const vendasExcel = Object.values(data);
+  const excelSales = Object.values(data);
   let objetoVendasExcel: any = []
 
 
 
 
-  if (vendasExcel[0].__EMPTY_17 === "Chave NFC-e / SAT") {
+  if (excelSales[0].__EMPTY_17 === "Chave NFC-e / SAT") {
 
 
 
-    for (let i = 1; i <= (vendasExcel.length - 1); i++) {
-      if (vendasExcel[i].__EMPTY_1) {
+    for (let i = 1; i <= (excelSales.length - 1); i++) {
+      if (excelSales[i].__EMPTY_1) {
 
         objetoVendasExcel.push({
-          nnf: vendasExcel[i].__EMPTY,
-          chave: vendasExcel[i].__EMPTY_17,
-          data: vendasExcel[i].__EMPTY_1,
-          mod: GetModel(vendasExcel[i].__EMPTY_17),
+          nnf: excelSales[i].__EMPTY,
+          chave: excelSales[i].__EMPTY_17,
+          data: excelSales[i].__EMPTY_1,
+          mod: GetModel(excelSales[i].__EMPTY_17),
           status: "OK",
-          total: vendasExcel[i].__EMPTY_13,
+          total: excelSales[i].__EMPTY_13,
 
         })
       }
@@ -35,57 +35,57 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
 
   } else
 
-    if (vendasExcel[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
+    if (excelSales[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
 
-      if (vendasExcel[0].CHAVE) {
+      if (excelSales[0].CHAVE) {
         console.log("Entrou")
 
 
-        vendasExcel.forEach((vendaExcel) => {
+        excelSales.forEach((excelSale) => {
 
           objetoVendasExcel.push({
-            nnf: vendaExcel.NUMERO,
-            chave: vendaExcel.CHAVE,
-            data: vendaExcel.DATA,
-            mod: GetModel(vendaExcel.CHAVE),
+            nnf: excelSale.NUMERO,
+            chave: excelSale.CHAVE,
+            data: excelSale.DATA,
+            mod: GetModel(excelSale.CHAVE),
             status: "OK",
-            total: vendaExcel.VALOR,
+            total: excelSale.VALOR,
           });
 
         })
       } else
 
-        if (vendasExcel[0]['Numero da Nota']) {
+        if (excelSales[0]['Numero da Nota']) {
 
-          vendasExcel.forEach((vendaExcel) => {
+          excelSales.forEach((excelSale) => {
 
 
-            if (vendaExcel['Numero da Nota'] || vendaExcel['Chave'])
+            if (excelSale['Numero da Nota'] || excelSale['Chave'])
 
 
               objetoVendasExcel.push({
-                nnf: vendaExcel['Numero da Nota'],
-                chave: vendaExcel['Chave'],
-                data: vendaExcel['Data'].replace(" -", ""),
-                mod: GetModel(vendaExcel['Chave']),
+                nnf: excelSale['Numero da Nota'],
+                chave: excelSale['Chave'],
+                data: excelSale['Data'].replace(" -", ""),
+                mod: GetModel(excelSale['Chave']),
                 status: "OK",
-                total: vendaExcel['Valor Total'],
+                total: excelSale['Valor Total'],
               });
 
           });
         } else
-          if (vendasExcel[0].__EMPTY_14 === "Chave") {
+          if (excelSales[0].__EMPTY_14 === "Chave") {
 
 
 
-            for (let i = 1; i <= (vendasExcel.length - 1); i++) {
+            for (let i = 1; i <= (excelSales.length - 1); i++) {
               objetoVendasExcel.push({
-                nnf: vendasExcel[i].__EMPTY,
-                chave: vendasExcel[i].__EMPTY_14,
-                data: vendasExcel[i].__EMPTY_1,
-                mod: GetModel(vendasExcel[i].__EMPTY_14),
+                nnf: excelSales[i].__EMPTY,
+                chave: excelSales[i].__EMPTY_14,
+                data: excelSales[i].__EMPTY_1,
+                mod: GetModel(excelSales[i].__EMPTY_14),
                 status: "OK",
-                total: vendasExcel[i].__EMPTY_11,
+                total: excelSales[i].__EMPTY_11,
               });
 
             };

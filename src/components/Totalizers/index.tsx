@@ -3,7 +3,7 @@ import formatCurrency from '../../ultils/formatCurrency';
 import { handleCalcTotal } from '../HandleCalcTotal';
 import { handleFilterXmlByType } from '../HandleFilterXmlByType';
 
-// import { Container } from './styles';
+
 
 export function Totalizers(jsonXmlList: any) {
   return (

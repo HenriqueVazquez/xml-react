@@ -2,10 +2,10 @@ import { IXmlItem } from "../../interfaces/IXmlItem";
 
 
 export function handleCalcTotal(items: IXmlItem[]) {
-  let valor: number = 0;
+  let value: number = 0;
   items.forEach((item) => {
-    valor += item.total;
+    value += item.total;
   });
 
-  return valor;
+  return value;
 }

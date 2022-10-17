@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { useState } from "react";
 
 import ptBR from "date-fns/locale/pt-BR";
 import XMLParser from "react-xml-parser";
@@ -58,30 +57,30 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
 
 
 
-          let ano = xmlToJson.children[0].children[0].children[5].value.substr(
+          let year = xmlToJson.children[0].children[0].children[5].value.substr(
             0,
             4
           );
-          let mes = xmlToJson.children[0].children[0].children[5].value.substr(
+          let month = xmlToJson.children[0].children[0].children[5].value.substr(
             4,
             2
           );
-          let dia = xmlToJson.children[0].children[0].children[5].value.substr(
+          let day = xmlToJson.children[0].children[0].children[5].value.substr(
             6,
             2
           );
-          let hora = xmlToJson.children[0].children[0].children[6].value.substr(
+          let hour = xmlToJson.children[0].children[0].children[6].value.substr(
             0,
             2
           );
-          let minuto = xmlToJson.children[0].children[0].children[6].value.substr(
+          let minutes = xmlToJson.children[0].children[0].children[6].value.substr(
             2,
             2
           );
-          let segundo =
+          let seconds =
             xmlToJson.children[0].children[0].children[6].value.substr(4, 2);
 
-          let dataTratada = `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}-03:00`;
+          let dataTratada = `${year}-${month}-${day}T${hour}:${minutes}:${seconds}-03:00`;
 
           let vCFe = 0
           if (xmlToJson.children.length) {
