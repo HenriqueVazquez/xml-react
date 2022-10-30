@@ -1,13 +1,13 @@
 import { read, utils } from 'xlsx';
-import { ExcelItem } from '../../interfaces/ExcelItem';
-import { GetModel } from '../GetModel';
+import { IXmlItem } from '../../interfaces/IXmlItem';
 
-// import { Container } from './styles';
+import { GetModel } from '../../ultils';
 
-async function HandleFileChangeExcel(event: any, setSystemList: any) {
+
+export async function HandleFileChangeExcel(event: any, setSystemList: any) {
   const f = await (event.target.files[0]).arrayBuffer();
   const wb = read(f);
-  const data = utils.sheet_to_json<ExcelItem>(wb.Sheets[wb.SheetNames[0]]);
+  const data = utils.sheet_to_json<IXmlItem>(wb.Sheets[wb.SheetNames[0]]);
   const excelSales = Object.values(data);
   let objetoVendasExcel: any = []
 
@@ -38,7 +38,7 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
     if (excelSales[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
 
       if (excelSales[0].CHAVE) {
-        
+
 
 
         excelSales.forEach((excelSale) => {
@@ -96,5 +96,3 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
   setSystemList(objetoVendasExcel);
 
 }
-
-export default HandleFileChangeExcel;

@@ -1,5 +1,5 @@
 import { IXmlItem } from "../../interfaces/IXmlItem";
-import formatCurrency from "../../ultils/formatCurrency";
+import { formatCurrency } from "../../ultils";
 
 export function handlePaymentTypeTotalizer(items: IXmlItem[]) {
 
@@ -53,7 +53,7 @@ export function handlePaymentTypeTotalizer(items: IXmlItem[]) {
         break;
     }
   });
- 
+
   return (
     <div className="flex flex-col items-center justify-center font-black font-sans mt-6 w-full">
       <div className="flex font-black font-sans  w-full items-center justify-evenly gap-10 ">

@@ -1,35 +1,33 @@
 import { useEffect, useState } from "react";
-import { MdReplay, MdOutlinePostAdd, MdSaveAlt } from 'react-icons/md';
-import { handleCalcTotal } from "./components/HandleCalcTotal";
-
-import formatCurrency from "../src/ultils/formatCurrency";
-
-import ExportToCSV from "./components/ExportToCSV";
-
 import "./styles/main.css";
+
+import 'react-toastify/dist/ReactToastify.css';
+import { MdReplay, MdOutlinePostAdd, MdSaveAlt } from 'react-icons/md';
+
+import {
+  formatCurrency,
+  ExportToCSV,
+  ClearCache,
+  handleCalcTotal,
+  HandleFileChange,
+  LookForDivergences,
+  HandleFileChangeExcel
+} from "./ultils/";
+
 import { IXmlItem } from "./interfaces/IXmlItem";
-import { ExcelItem } from "./interfaces/ExcelItem";
-import ListItens from "./components/ListItens";
-import { HeaderTable } from "./components/HeaderTable";
-import { Totalizers } from "./components/Totalizers";
-import { HandleFileChange } from "./components/HandleFileChange";
-import HandleFileChangeExcel from "./components/HandleFileChangeExcel";
-import { LookForDivergences } from "./components/LookForDivergences";
-import { ClearCache } from "./components/ClearCache";
+import { ListItens, HeaderTable, Totalizers } from "./components";
 
 
 
 function App() {
   const [jsonXmlList, setJsonXmlList] = useState<IXmlItem[]>([]);
-  const [systemList, setSystemList] = useState<ExcelItem[]>([]);
+  const [systemList, setSystemList] = useState<IXmlItem[]>([]);
   const [missingNote, setMissingNote] = useState<any[]>([]);
 
   const total = formatCurrency(handleCalcTotal(jsonXmlList));
   const missingSystemAmount = formatCurrency(handleCalcTotal(missingNote));
   const numberOfNotesMissing = missingNote.length;
   const style = "default";
-
-
 
 
   const handleFileChange = (event: any) => {
@@ -43,8 +41,9 @@ function App() {
   }
 
   useEffect(() => {
-    LookForDivergences(jsonXmlList, systemList, setMissingNote, missingNote)
+    LookForDivergences(jsonXmlList, systemList, setMissingNote, missingNote);
   }, [systemList]);
+
 
 
 
@@ -53,6 +52,7 @@ function App() {
     <div className="flex flex-col items-center justify-center mb-8  text-blue-700  w-full
      py-4 px-8  font-black          
      ">
+
       <h1 className="block mt-5 mb-4  drop-shadow-2xl font-black text-2xl 
       font-sans
       "> Buscar pela divergencias entre XML e consulta de faturamento ou sentença venda</h1>
@@ -109,6 +109,7 @@ function App() {
       {
         jsonXmlList.length > 0 && (
           <>
+
             <div
               className="flex-column"
             >
@@ -179,6 +180,7 @@ function App() {
 
             {missingNote.length !== 0 ?
               <>
+
                 <h1 className="text-blue-700 mb-4 font-black text-2xl font-sans drop-shadow-2xl ">
                   Notas que faltaram
                 </h1>
@@ -189,7 +191,7 @@ function App() {
                     <tbody className="  w-full mt-3">
 
                       {missingNote.length !== 0 ?
-                        missingNote.map((item: ExcelItem, index: number) => {
+                        missingNote.map((item: IXmlItem, index: number) => {
                           return (
                             ListItens(item, index, style)
                           );
@@ -208,9 +210,11 @@ function App() {
               :
               ""
             }
+
           </>
         )
       }
+
 
     </div >
   );

@@ -1,10 +1,11 @@
 
-import { ExcelItem } from '../../interfaces/ExcelItem';
-import formatCurrency from '../../ultils/formatCurrency';
+
+import { IXmlItem } from '../../interfaces/IXmlItem';
+import { formatCurrency } from "../../ultils/";
 
 // import { Container } from './styles';
 
-function ListItens(item: ExcelItem, index: number, style?: string) {
+export function ListItens(item: IXmlItem, index: number, style?: string) {
   return (
     <tr
       key={index}
@@ -41,4 +42,3 @@ function ListItens(item: ExcelItem, index: number, style?: string) {
     </tr>)
 }
 
-export default ListItens;

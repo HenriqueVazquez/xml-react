@@ -1,5 +1,5 @@
 import { IXmlItem } from "../../interfaces/IXmlItem";
-import formatCurrency from "../../ultils/formatCurrency";
+import { formatCurrency } from "../../ultils";
 
 export function handleFilterXmlByType(items: IXmlItem[], modelo: number) {
   let totalNfeValue: number = 0;

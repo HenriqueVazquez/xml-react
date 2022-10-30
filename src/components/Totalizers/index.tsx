@@ -1,8 +1,7 @@
-
-import formatCurrency from '../../ultils/formatCurrency';
-import { handleCalcTotal } from '../HandleCalcTotal';
+import { formatCurrency, handleCalcTotal } from "../../ultils/";
 import { handleFilterXmlByType } from '../HandleFilterXmlByType';
 import { handlePaymentTypeTotalizer } from '../HandlePaymentTypeTotalizer';
+
 
 
 
