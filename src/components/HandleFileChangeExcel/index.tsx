@@ -38,7 +38,7 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
     if (excelSales[0].__EMPTY_17 !== "Chave NFC-e / SAT") {
 
       if (excelSales[0].CHAVE) {
-        console.log("Entrou")
+        
 
 
         excelSales.forEach((excelSale) => {
@@ -56,6 +56,7 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
       } else
 
         if (excelSales[0]['Numero da Nota']) {
+
 
           excelSales.forEach((excelSale) => {
 
@@ -76,13 +77,11 @@ async function HandleFileChangeExcel(event: any, setSystemList: any) {
         } else
           if (excelSales[0].__EMPTY_14 === "Chave") {
 
-
-
             for (let i = 1; i <= (excelSales.length - 1); i++) {
               objetoVendasExcel.push({
                 nnf: excelSales[i].__EMPTY,
                 chave: excelSales[i].__EMPTY_14,
-                data: excelSales[i].__EMPTY_1,
+                data: excelSales[i].__EMPTY_6,
                 mod: GetModel(excelSales[i].__EMPTY_14),
                 status: "OK",
                 total: excelSales[i].__EMPTY_11,

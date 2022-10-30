@@ -28,6 +28,10 @@ function ListItens(item: ExcelItem, index: number, style?: string) {
       </td>
       <td className={`px-6 py-4 mb-6 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? style !== "default" ? "text-sky-50" : "text-black" :
         item.status === "Venda cancelada" ? style !== "default" ? "text-sky-50" : "text-black" : "text-black"} `}>
+        {item.typePay}
+      </td>
+      <td className={`px-6 py-4 mb-6 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? style !== "default" ? "text-sky-50" : "text-black" :
+        item.status === "Venda cancelada" ? style !== "default" ? "text-sky-50" : "text-black" : "text-black"} `}>
         {formatCurrency(item.total)}
       </td>
       <td className={`rounded-r-full px-6 mb-6 py-4 text-sm  whitespace-nowrap ${item.status === "Faltou sistema" ? style !== "default" ? "text-sky-50" : "text-black" :

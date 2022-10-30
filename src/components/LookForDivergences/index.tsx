@@ -1,5 +1,6 @@
 import { ExcelItem } from "../../interfaces/ExcelItem";
 import { IXmlItem } from "../../interfaces/IXmlItem";
+import { GetTypeEmission } from "../GetTypeEmission";
 
 export function LookForDivergences(jsonXmlList: any, systemList: any, setMissingNotes: any, missingNotes: any) {
 
@@ -12,12 +13,12 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
 
     if (!checkIfAlreadyAdded) {
       const compareSales = systemList.find((vendaSistema: { chave: string; }) => vendaXML.chave === vendaSistema.chave);
-      console.log(searchTotalDifference);
+
 
       if (!compareSales || searchTotalDifference) {
         if (vendaXML.chave || vendaXML.nnf) {
           if (searchTotalDifference) {
-            console.log("Entrou")
+
 
             vendaXML.status = "Venda cancelada"
 
@@ -52,9 +53,13 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
             setMissingNotes((prev: any) => [vendaSistema, ...prev]);
           }
           else if (vendaSistema.chave && vendaSistema.total > 0) {
+            let typeOfEmission = GetTypeEmission(vendaSistema.chave);
+            if (typeOfEmission === 9) {
+              vendaSistema.status = "Contingência";
 
-
-            vendaSistema.status = "Faltou XML"
+            } else {
+              vendaSistema.status = "Faltou XML";
+            }
 
 
             setMissingNotes((prev: any) => [vendaSistema, ...prev]);

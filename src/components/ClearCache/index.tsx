@@ -6,7 +6,7 @@ export function ClearCache(setJsonXmlList: any, setSystemList: any, setMissingNo
   setMissingNote([])
 
 
-  console.log(fileInputXML)
+
 
   // @ts-ignore: Object is possibly 'null'.
   fileInputXML.value = "";

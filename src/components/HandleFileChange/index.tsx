@@ -14,11 +14,12 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
     reader.onloadend = () => {
       const xmlToJson = new XMLParser().parseFromString(reader.result);
 
+
       if (xmlToJson.children[1].children[0].children[2].value) {
 
-
         let total = 0
-
+        let adjustTypePay = 0;
+        let typePay = "";
 
         for (let i = 0; i < xmlToJson.children[0].children[0].children.length; i++) {
           if (xmlToJson.children[0].children[0].children[i].name === "total") {
@@ -28,6 +29,49 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
               }
             }
 
+          }
+        }
+
+        for (let i = 0; i < xmlToJson.children[0].children[0].children.length; i++) {
+          if (xmlToJson.children[0].children[0].children[i].name === "pag") {
+            adjustTypePay = parseInt(xmlToJson.children[0].children[0].children[i].children[0].children[0].value, 10);
+
+
+            switch (adjustTypePay) {
+              case 1:
+                typePay = "Dinheiro";
+                break;
+              case 2:
+                typePay = "Cheque";
+                break;
+              case 3:
+                typePay = "Cartão de Crédito";
+                break;
+              case 4:
+                typePay = "Cartão de Débito";
+                break;
+              case 5:
+                typePay = "Crédito Loja";
+                break;
+              case 10:
+                typePay = "Vale Alimentação";
+                break;
+              case 11:
+                typePay = "Vale Refeição";
+                break;
+              case 12:
+                typePay = "Vale Presente";
+                break;
+              case 13:
+                typePay = "Vale Combustível";
+                break;
+              case 17:
+                typePay = "PIX";
+                break;
+              default:
+                typePay = "OUTROS"
+                break;
+            }
           }
         }
 
@@ -46,12 +90,17 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
             xmlToJson.children[0]?.children[0].children[0].children[3].value
           ),
           status: "OK",
+          typePay: typePay,
           total: total,
         };
 
 
         setJsonXmlList((prev: any) => [item, ...prev]);
+
+
       } else
+
+
 
         if (xmlToJson.children[0].attributes.Id?.match(/\d/g).join("")) {
 
@@ -83,6 +132,8 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
           let dataTratada = `${year}-${month}-${day}T${hour}:${minutes}:${seconds}-03:00`;
 
           let vCFe = 0
+          let typePay = "";
+
           if (xmlToJson.children.length) {
             for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
               if (xmlToJson.children[0].children[i]?.name === "total") {
@@ -94,6 +145,56 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
               }
 
             }
+
+            for (let i = 0; i < xmlToJson.children[0].children.length; i++) {
+              if (xmlToJson.children[0].children[i]?.name === "pgto") {
+                for (let j = 0; j < xmlToJson.children[0].children[i].children.length; j++) {
+                  if (xmlToJson.children[0].children[i].children[j].name === "MP") {
+                    let adjustTypePay = parseInt(xmlToJson.children[0].children[i].children[j].children[0].value);
+
+
+                    switch (adjustTypePay) {
+                      case 1:
+                        typePay = "Dinheiro";
+                        break;
+                      case 2:
+                        typePay = "Cheque";
+                        break;
+                      case 3:
+                        typePay = "Cartão de Crédito";
+                        break;
+                      case 4:
+                        typePay = "Cartão de Débito";
+                        break;
+                      case 5:
+                        typePay = "Crédito Loja";
+                        break;
+                      case 10:
+                        typePay = "Vale Alimentação";
+                        break;
+                      case 11:
+                        typePay = "Vale Refeição";
+                        break;
+                      case 12:
+                        typePay = "Vale Presente";
+                        break;
+                      case 13:
+                        typePay = "Vale Combustível";
+                        break;
+                      case 17:
+                        typePay = "PIX";
+                        break;
+                      default:
+                        typePay = "OUTROS"
+                        break;
+                    }
+                  }
+                }
+              }
+
+            }
+
+
           }
 
 
@@ -108,7 +209,7 @@ export function HandleFileChange(event: any, setJsonXmlList: any) {
               xmlToJson.children[0].children[0].children[2].value
             ),
             status: "OK",
-
+            typePay: typePay,
             total: vCFe,
           };
 

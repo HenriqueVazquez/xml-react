@@ -13,6 +13,9 @@ export function HeaderTable() {
         <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase font-s">
           Data
         </th>
+        <th className="px-6 py-3 text-base font-black text-left   text-gray-200 uppercase ">
+          Tipo pagamento
+        </th>
         <th className="px-6 py-3 text-base font-black text-left text-gray-200 uppercase ">
           Valor
         </th>
