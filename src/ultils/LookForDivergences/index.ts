@@ -5,7 +5,7 @@ import { GetTypeEmission } from "../../ultils";
 
 
 export function LookForDivergences(jsonXmlList: any, systemList: any, setMissingNotes: any, missingNotes: any) {
-  let countNot: number = 0;
+  let countDivergences: number = 0;
 
   jsonXmlList.forEach((vendaXML: IXmlItem) => {
 
@@ -24,14 +24,14 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
 
 
             vendaXML.status = "Venda cancelada";
-            countNot = countNot + 1;
+            countDivergences = countDivergences + 1;
 
             setMissingNotes((prev: any) => [vendaXML, ...prev]);
 
           }
           else {
             vendaXML.status = "Faltou sistema";
-            countNot = countNot + 1;
+            countDivergences = countDivergences + 1;
 
             setMissingNotes((prev: any) => [vendaXML, ...prev]);
 
@@ -55,17 +55,17 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
 
 
             vendaSistema.status = "Registro Manual";
-            countNot = countNot + 1;
+            countDivergences = countDivergences + 1;
             setMissingNotes((prev: any) => [vendaSistema, ...prev]);
           }
           else if (vendaSistema.chave && vendaSistema.total > 0) {
             let typeOfEmission = GetTypeEmission(vendaSistema.chave);
             if (typeOfEmission === 9) {
               vendaSistema.status = "Contingência";
-              countNot = countNot + 1;
+              countDivergences = countDivergences + 1;
 
             } else {
-              countNot = countNot + 1;
+              countDivergences = countDivergences + 1;
               vendaSistema.status = "Faltou XML";
               ;
             }
@@ -78,17 +78,17 @@ export function LookForDivergences(jsonXmlList: any, systemList: any, setMissing
       }
     }
   });
-  if (countNot > 0) {
-    if (countNot === 1) {
+  if (countDivergences > 0) {
+    if (countDivergences === 1) {
       toast.error('Foi localizado 1 divergência', {
         theme: "colored"
       });
     } else {
-      toast.error(`Foram achadas ${countNot} divergências`, {
+      toast.error(`Foram achadas ${countDivergences} divergências`, {
         theme: "colored"
       });
     }
-  } else if (countNot === 0 && jsonXmlList.length > 0) {
+  } else if (countDivergences === 0 && jsonXmlList.length > 0) {
     toast.success('Nenhuma divergência encontrada!', {
       theme: "colored"
     });

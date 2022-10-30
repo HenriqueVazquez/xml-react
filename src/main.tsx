@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ToastContainer className="w-32 text-xl font-sans font-bold" />
+    <ToastContainer className="w-32 text-xl font-sans font-bold rounded-full" />
     <App />
   </React.StrictMode>
 );
